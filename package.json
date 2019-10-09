@@ -2,6 +2,9 @@
   "name": "flv-server",
   "version": "1.0.0",
   "license": "MIT",
+  "scripts": {
+    "server": "ts-node server.ts"
+  },
   "devDependencies": {
     "@types/node": "^12.7.12",
     "@types/socket.io": "^2.1.4",
