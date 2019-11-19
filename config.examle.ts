@@ -1,3 +1,6 @@
 export const config = {
-  mpcPath: 'C:\\Program Files (x86)\\MPC-HC\\mpc-hc.exe'
+  ffmpegPath: 'ffmpeg.exe',
+  filePath: 'video.mp4',
+  playerPath: 'mpc-hc.exe',
+  args: ['playpath', '-']
 };

@@ -5,7 +5,7 @@ import { config } from './config';
 
 const io = SocketClient('http://localhost:3000');
 
-const mpcProcess = spawn(config.mpcPath, ['playpath', '-'], {
+const mpcProcess = spawn(config.playerPath, config.args, {
   stdio: 'pipe'
 });
 
