@@ -5,6 +5,8 @@ import { config } from './config';
 
 export function ffmpegPipe(): Readable {
   const ffmpegParams = [
+    '-ss',
+    '00:00:00',
     '-re',
     '-i',
     config.filePath,
