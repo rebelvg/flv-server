@@ -25,6 +25,10 @@ io.on('stream', (data: Buffer) => {
   clientProcess.stdin.write(data);
 });
 
-io.emit('client');
+io.on('disconnect', () => {
+  clientProcess.kill();
+});
+
+io.emit('subscribe');
 
 console.log('client started...');

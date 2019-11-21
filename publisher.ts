@@ -8,6 +8,8 @@ const ffmpegStream = ffmpegPipe();
 
 const flvStreamParser = new FlvStreamParser();
 
+io.emit('publish');
+
 flvStreamParser.on('flv-header', (flvHeader: FlvHeader) => {
   io.emit('flv_header', {
     flvHeader

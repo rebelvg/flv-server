@@ -1,5 +1,6 @@
 import * as SocketServer from 'socket.io';
 import { FlvHeader, FlvPacketHeader, FlvPacket, FlvPacketType } from 'node-flv';
+import * as _ from 'lodash';
 
 interface ISocketFlvHeader {
   flvHeader: any;
@@ -15,6 +16,7 @@ interface IStreamClient {
   lastTimestamp: number;
 }
 
+let PUBLISHER: SocketServer.Socket = null;
 const CLIENTS: IStreamClient[] = [];
 
 const io = SocketServer(3000);
@@ -29,8 +31,16 @@ let FLV_LAST_TIMESTAMP = 0;
 io.on('connection', socket => {
   console.log('connection');
 
-  socket.on('client', async () => {
-    console.log('client connected');
+  socket.on('publish', () => {
+    console.log('publisher connected');
+
+    if (!PUBLISHER) {
+      PUBLISHER = socket;
+    }
+  });
+
+  socket.on('subscribe', async () => {
+    console.log('subscriber connected');
 
     CLIENTS.push({
       socket,
@@ -39,11 +49,35 @@ io.on('connection', socket => {
     });
   });
 
+  socket.on('disconnect', () => {
+    console.log('client disconnected');
+
+    _.remove(CLIENTS, client => {
+      return client.socket === socket;
+    });
+
+    if (PUBLISHER === socket) {
+      for (const client of CLIENTS) {
+        client.socket.disconnect();
+      }
+
+      PUBLISHER = null;
+    }
+  });
+
   socket.on('subtitles', data => {
+    if (PUBLISHER !== socket) {
+      return;
+    }
+
     io.emit('subtitles', data);
   });
 
   socket.on('flv_header', (data: ISocketFlvHeader) => {
+    if (PUBLISHER !== socket) {
+      return;
+    }
+
     const flvHeader: FlvHeader = Object.setPrototypeOf(data.flvHeader, FlvHeader.prototype);
 
     if (!FLV_HEADER) {
@@ -54,6 +88,10 @@ io.on('connection', socket => {
   });
 
   socket.on('flv_packet', (data: ISocketFlvPacker) => {
+    if (PUBLISHER !== socket) {
+      return;
+    }
+
     data.flvPacket.header = Object.setPrototypeOf(data.flvPacket.header, FlvPacketHeader.prototype);
     const flvPacket: FlvPacket = Object.setPrototypeOf(data.flvPacket, FlvPacket.prototype);
 
@@ -93,9 +131,11 @@ io.on('connection', socket => {
         client.allFirstPacketsSent = true;
       }
 
-      flvPacket.header.timestampLower -= client.lastTimestamp;
+      const clonedPacket = _.cloneDeep(flvPacket);
 
-      client.socket.emit('stream', flvPacket.build());
+      clonedPacket.header.timestampLower -= client.lastTimestamp;
+
+      client.socket.emit('stream', clonedPacket.build());
     }
   });
 });
