@@ -4,7 +4,7 @@ import { ffmpegPipe } from './ffmpeg-pipe';
 
 const io = SocketClient('http://localhost:3000');
 
-const flvStream = ffmpegPipe();
+const ffmpegStream = ffmpegPipe();
 
 const flvStreamParser = new FlvStreamParser();
 
@@ -20,4 +20,6 @@ flvStreamParser.on('flv-packet', (flvPacket: FlvPacket) => {
   });
 });
 
-flvStream.pipe(flvStreamParser);
+ffmpegStream.pipe(flvStreamParser);
+
+console.log('publisher started...');

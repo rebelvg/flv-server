@@ -1,12 +1,12 @@
-import * as childProcess from 'child_process';
+import { spawn } from 'child_process';
 import { Readable } from 'stream';
 
 import { config } from './config';
 
+let lastError: string;
+
 export function ffmpegPipe(): Readable {
   const ffmpegParams = [
-    '-ss',
-    '00:00:00',
     '-re',
     '-i',
     config.filePath,
@@ -26,8 +26,18 @@ export function ffmpegPipe(): Readable {
     '-'
   ];
 
-  const ffmpegProcess = childProcess.spawn(config.ffmpegPath, ffmpegParams, {
+  const ffmpegProcess = spawn(config.ffmpegPath, ffmpegParams, {
     stdio: 'pipe'
+  });
+
+  ffmpegProcess.stderr.setEncoding('utf8');
+
+  ffmpegProcess.stderr.on('data', (data: string) => {
+    lastError = data;
+  });
+
+  ffmpegProcess.on('exit', () => {
+    throw lastError;
   });
 
   return ffmpegProcess.stdout;

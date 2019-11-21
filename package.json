@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "server": "ts-node server.ts",
-    "publisher": "ts-node publish.ts",
+    "publisher": "ts-node publisher.ts",
     "client": "ts-node client.ts"
   },
   "devDependencies": {
