@@ -23,11 +23,11 @@ export function ffmpegPipe(): Readable {
     '256k',
     '-f',
     'flv',
-    '-'
+    '-',
   ];
 
   const ffmpegProcess = spawn(config.ffmpegPath, ffmpegParams, {
-    stdio: 'pipe'
+    stdio: 'pipe',
   });
 
   ffmpegProcess.stderr.setEncoding('utf8');

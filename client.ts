@@ -5,20 +5,16 @@ import { config } from './config';
 
 const io = SocketClient('http://localhost:3000');
 
-let lastError: string;
-
 const clientProcess = spawn(config.clientPath, config.clientArgs, {
-  stdio: 'pipe'
+  stdio: 'pipe',
 });
 
-clientProcess.stderr.setEncoding('utf8');
-
-clientProcess.stderr.on('data', (data: string) => {
-  lastError = data;
+clientProcess.on('close', () => {
+  throw new Error('player was closed...');
 });
 
-clientProcess.on('exit', () => {
-  throw lastError;
+clientProcess.stdin.on('error', (error) => {
+  console.error('error', error);
 });
 
 io.on('stream', (data: Buffer) => {
@@ -26,7 +22,7 @@ io.on('stream', (data: Buffer) => {
 });
 
 io.on('disconnect', () => {
-  clientProcess.kill();
+  throw new Error('lost connection...');
 });
 
 io.emit('subscribe');

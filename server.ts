@@ -28,7 +28,7 @@ let FLV_FIRST_VIDEO_PACKET: FlvPacket;
 
 let FLV_LAST_TIMESTAMP = 0;
 
-io.on('connection', socket => {
+io.on('connection', (socket) => {
   console.log('connection');
 
   socket.on('publish', () => {
@@ -45,14 +45,14 @@ io.on('connection', socket => {
     CLIENTS.push({
       socket,
       allFirstPacketsSent: false,
-      lastTimestamp: FLV_LAST_TIMESTAMP
+      lastTimestamp: FLV_LAST_TIMESTAMP,
     });
   });
 
   socket.on('disconnect', () => {
     console.log('client disconnected');
 
-    _.remove(CLIENTS, client => {
+    _.remove(CLIENTS, (client) => {
       return client.socket === socket;
     });
 
@@ -65,7 +65,7 @@ io.on('connection', socket => {
     }
   });
 
-  socket.on('subtitles', data => {
+  socket.on('subtitles', (data) => {
     if (PUBLISHER !== socket) {
       return;
     }
