@@ -36,6 +36,10 @@ io.on('connection', (socket) => {
 
     if (!PUBLISHER) {
       PUBLISHER = socket;
+    } else {
+      console.log('already publishing...');
+
+      socket.disconnect();
     }
   });
 
@@ -62,6 +66,11 @@ io.on('connection', (socket) => {
       }
 
       PUBLISHER = null;
+
+      FLV_HEADER = null;
+      FLV_FIRST_AUDIO_PACKET = null;
+      FLV_FIRST_VIDEO_PACKET = null;
+      FLV_FIRST_METADATA_PACKET = null;
     }
   });
 
