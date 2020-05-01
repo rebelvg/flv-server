@@ -1,6 +1,7 @@
 import * as SocketServer from 'socket.io';
-import { FlvHeader, FlvPacketHeader, FlvPacket, FlvPacketType } from 'node-flv';
+import { FlvHeader, FlvPacketHeader, FlvPacket, FlvPacketType, FlvPacketVideo } from 'node-flv';
 import * as _ from 'lodash';
+import { VideoFrameTypeEnum } from 'node-flv/dist/flv-data';
 
 interface ISocketFlvHeader {
   flvHeader: any;
@@ -12,7 +13,6 @@ interface ISocketFlvPacker {
 
 interface IStreamClient {
   socket: SocketServer.Socket;
-  allFirstPacketsSent: boolean;
   lastTimestamp: number;
 }
 
@@ -25,6 +25,8 @@ let FLV_HEADER: FlvHeader;
 let FLV_FIRST_METADATA_PACKET: FlvPacket;
 let FLV_FIRST_AUDIO_PACKET: FlvPacket;
 let FLV_FIRST_VIDEO_PACKET: FlvPacket;
+
+let GOP_CACHE: FlvPacket[] = [];
 
 let FLV_LAST_TIMESTAMP = 0;
 
@@ -46,11 +48,30 @@ io.on('connection', (socket) => {
   socket.on('subscribe', async () => {
     console.log('subscriber connected');
 
-    CLIENTS.push({
-      socket,
-      allFirstPacketsSent: false,
-      lastTimestamp: FLV_LAST_TIMESTAMP,
-    });
+    if (!PUBLISHER) {
+      console.log('no publisher');
+
+      socket.disconnect();
+
+      return;
+    }
+
+    const client = { socket, lastTimestamp: FLV_LAST_TIMESTAMP };
+
+    CLIENTS.push(client);
+
+    client.socket.emit('stream', FLV_HEADER.build());
+    client.socket.emit('stream', FLV_FIRST_METADATA_PACKET.build());
+    client.socket.emit('stream', FLV_FIRST_AUDIO_PACKET.build());
+    client.socket.emit('stream', FLV_FIRST_VIDEO_PACKET.build());
+
+    for (const gopPacker of GOP_CACHE) {
+      const clonedPacket = _.cloneDeep(gopPacker);
+
+      clonedPacket.header.timestampLower = 0;
+
+      client.socket.emit('stream', clonedPacket.build());
+    }
   });
 
   socket.on('disconnect', () => {
@@ -71,6 +92,8 @@ io.on('connection', (socket) => {
       FLV_FIRST_AUDIO_PACKET = null;
       FLV_FIRST_VIDEO_PACKET = null;
       FLV_FIRST_METADATA_PACKET = null;
+
+      GOP_CACHE = [];
     }
   });
 
@@ -130,16 +153,17 @@ io.on('connection', (socket) => {
       return;
     }
 
-    for (const client of CLIENTS) {
-      if (!client.allFirstPacketsSent) {
-        client.socket.emit('stream', FLV_HEADER.build());
-        client.socket.emit('stream', FLV_FIRST_METADATA_PACKET.build());
-        client.socket.emit('stream', FLV_FIRST_AUDIO_PACKET.build());
-        client.socket.emit('stream', FLV_FIRST_VIDEO_PACKET.build());
+    if (flvPacket.header.type === FlvPacketType.VIDEO) {
+      const videoPacket: FlvPacketVideo = flvPacket.parsePayload();
 
-        client.allFirstPacketsSent = true;
+      if (videoPacket.data.frameType === VideoFrameTypeEnum.KEYFRAME) {
+        GOP_CACHE = [flvPacket];
+      } else {
+        GOP_CACHE.push(flvPacket);
       }
+    }
 
+    for (const client of CLIENTS) {
       const clonedPacket = _.cloneDeep(flvPacket);
 
       clonedPacket.header.timestampLower -= client.lastTimestamp;

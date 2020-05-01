@@ -239,10 +239,10 @@ negotiator@0.6.2:
   resolved "https://registry.yarnpkg.com/negotiator/-/negotiator-0.6.2.tgz#feacf7ccf525a77ae9634436a64883ffeca346fb"
   integrity sha512-hZXc7K2e+PgeI1eDBe/10Ard4ekbfrrqG8Ep+8Jmf4JID2bNg7NvCPOZN+kfF574pFQI7mum2AUqDidoKqcTOw==
 
-node-flv@^0.9.2:
-  version "0.9.2"
-  resolved "https://registry.yarnpkg.com/node-flv/-/node-flv-0.9.2.tgz#3514d261258e9864d9217058874695a85a69a6ec"
-  integrity sha512-8jtfw+svyZ7KDjMOc3pEHgRA12CnRhOm7kRfW8W77f+ng3v/DKy0iiDVnpOGmvTxYRmpEcXcBv4FmWKw+ZpBZA==
+node-flv@^0.9.3:
+  version "0.9.3"
+  resolved "https://registry.yarnpkg.com/node-flv/-/node-flv-0.9.3.tgz#93382fd04f9c28498c2926cc1aea4935805b7479"
+  integrity sha512-VCQc6jjpcLVdBm57zF8Gt/31rQwLAPnkjO9BYSHd5hWIHO/+4HyCG1g7cNdjatS5P6ta7WN4MDYRtI3xej4G8A==
   dependencies:
     bitwise "^0.2.0"
     lodash "^4.17.15"
