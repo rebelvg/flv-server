@@ -8,16 +8,16 @@
     "client": "ts-node client.ts"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.149",
-    "@types/node": "^12.7.12",
+    "@types/lodash": "^4.14.168",
+    "@types/node": "^14.14.25",
     "@types/socket.io": "^2.1.4",
     "@types/socket.io-client": "^1.4.32",
-    "ts-node": "^8.4.1",
-    "typescript": "^3.6.4"
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.3"
   },
   "dependencies": {
-    "lodash": "^4.17.15",
-    "node-flv": "^0.9.4",
+    "lodash": "^4.17.20",
+    "node-flv": "^0.9.9",
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0"
   }
