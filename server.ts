@@ -1,5 +1,11 @@
 import * as SocketServer from 'socket.io';
-import { FlvHeader, FlvPacketHeader, FlvPacket, FlvPacketType, FlvPacketVideo } from 'node-flv';
+import {
+  FlvHeader,
+  FlvPacketHeader,
+  FlvPacket,
+  FlvPacketType,
+  FlvPacketVideo,
+} from 'node-flv';
 import * as _ from 'lodash';
 import { VideoFrameTypeEnum } from 'node-flv/dist/flv-data';
 
@@ -110,7 +116,10 @@ io.on('connection', (socket) => {
       return;
     }
 
-    const flvHeader: FlvHeader = Object.setPrototypeOf(data.flvHeader, FlvHeader.prototype);
+    const flvHeader: FlvHeader = Object.setPrototypeOf(
+      data.flvHeader,
+      FlvHeader.prototype,
+    );
 
     if (!FLV_HEADER) {
       FLV_HEADER = flvHeader;
@@ -124,12 +133,21 @@ io.on('connection', (socket) => {
       return;
     }
 
-    data.flvPacket.header = Object.setPrototypeOf(data.flvPacket.header, FlvPacketHeader.prototype);
-    const flvPacket: FlvPacket = Object.setPrototypeOf(data.flvPacket, FlvPacket.prototype);
+    data.flvPacket.header = Object.setPrototypeOf(
+      data.flvPacket.header,
+      FlvPacketHeader.prototype,
+    );
+    const flvPacket: FlvPacket = Object.setPrototypeOf(
+      data.flvPacket,
+      FlvPacket.prototype,
+    );
 
     FLV_LAST_TIMESTAMP = flvPacket.header.timestampLower;
 
-    if (!FLV_FIRST_METADATA_PACKET && flvPacket.header.type === FlvPacketType.METADATA) {
+    if (
+      !FLV_FIRST_METADATA_PACKET &&
+      flvPacket.header.type === FlvPacketType.METADATA
+    ) {
       console.log('got first metadata');
 
       FLV_FIRST_METADATA_PACKET = flvPacket;
@@ -137,7 +155,10 @@ io.on('connection', (socket) => {
       return;
     }
 
-    if (!FLV_FIRST_AUDIO_PACKET && flvPacket.header.type === FlvPacketType.AUDIO) {
+    if (
+      !FLV_FIRST_AUDIO_PACKET &&
+      flvPacket.header.type === FlvPacketType.AUDIO
+    ) {
       console.log('got first audio');
 
       FLV_FIRST_AUDIO_PACKET = flvPacket;
@@ -145,7 +166,10 @@ io.on('connection', (socket) => {
       return;
     }
 
-    if (!FLV_FIRST_VIDEO_PACKET && flvPacket.header.type === FlvPacketType.VIDEO) {
+    if (
+      !FLV_FIRST_VIDEO_PACKET &&
+      flvPacket.header.type === FlvPacketType.VIDEO
+    ) {
       console.log('got first video');
 
       FLV_FIRST_VIDEO_PACKET = flvPacket;

@@ -1,4 +1,10 @@
-import { FlvHeader, FlvPacketHeader, FlvPacket, FlvPacketType, FlvStreamParser } from 'node-flv';
+import {
+  FlvHeader,
+  FlvPacketHeader,
+  FlvPacket,
+  FlvPacketType,
+  FlvStreamParser,
+} from 'node-flv';
 import * as SocketClient from 'socket.io-client';
 import { ffmpegPipe } from './ffmpeg-pipe';
 import { Socket } from 'socket.io';
