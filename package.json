@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "lodash": "^4.17.20",
-    "node-flv": "^0.9.9",
+    "node-flv": "^0.9.11",
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0"
   }
