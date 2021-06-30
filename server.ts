@@ -188,7 +188,7 @@ io.on('connection', (socket) => {
 
     if (
       !FLV_FIRST_METADATA_PACKET &&
-      flvPacket.header.type === FlvPacketType.METADATA
+      flvPacket.type === FlvPacketType.METADATA
     ) {
       console.log('got first metadata');
 
@@ -197,10 +197,7 @@ io.on('connection', (socket) => {
       return;
     }
 
-    if (
-      !FLV_FIRST_AUDIO_PACKET &&
-      flvPacket.header.type === FlvPacketType.AUDIO
-    ) {
+    if (!FLV_FIRST_AUDIO_PACKET && flvPacket.type === FlvPacketType.AUDIO) {
       console.log('got first audio');
 
       FLV_FIRST_AUDIO_PACKET = flvPacket;
@@ -208,10 +205,7 @@ io.on('connection', (socket) => {
       return;
     }
 
-    if (
-      !FLV_FIRST_VIDEO_PACKET &&
-      flvPacket.header.type === FlvPacketType.VIDEO
-    ) {
+    if (!FLV_FIRST_VIDEO_PACKET && flvPacket.type === FlvPacketType.VIDEO) {
       console.log('got first video');
 
       FLV_FIRST_VIDEO_PACKET = flvPacket;
@@ -219,7 +213,7 @@ io.on('connection', (socket) => {
       return;
     }
 
-    if (flvPacket.header.type === FlvPacketType.VIDEO) {
+    if (flvPacket.type === FlvPacketType.VIDEO) {
       const videoPacket: FlvPacketVideo = flvPacket.parsePayload();
 
       if (videoPacket.data.frameType === VideoFrameTypeEnum.KEYFRAME) {
