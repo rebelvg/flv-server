@@ -62,6 +62,12 @@ const httpServer = http.createServer((req, res) => {
     res,
     lastTimestamp: FLV_LAST_TIMESTAMP,
   });
+
+  res.socket.on('close', () => {
+    _.remove(HTTP_CLIENTS, (client) => {
+      return client.res === res;
+    });
+  });
 });
 
 const io = SocketServer(httpServer);
